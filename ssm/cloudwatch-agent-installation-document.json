@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "2.2",
+  "description": "Document to install and run CloudWatch Agent to create custom metrics.",
+  "parameters": {
+    "configurationLocation": {
+      "description": "(Required) Name of CloudWatch Agent configuration file",
+      "type": "String",
+      "default": "",
+      "allowedPattern": "[a-zA-Z0-9-\"~:_@./^(*)!<>?=+]*$"
+    }
+  },
+  "mainSteps": [
+    {
+      "action": "aws:runDocument",
+      "name": "installCloudWatch",
+      "inputs": {
+        "documentType": "SSMDocument",
+        "documentPath": "AWS-ConfigureAWSPackage",
+        "documentParameters": "{\"action\":\"Install\",\"name\":\"AmazonCloudWatchAgent\"}"
+      }
+    },
+    {
+      "action": "aws:runShellScript",
+      "name": "runShellScript",
+      "precondition": {
+        "StringEquals": [
+          "platformType",
+          "Linux"
+        ]
+      },
+      "inputs": {
+        "runCommand": [
+          "mkdir -p /usr/share/collectd/",
+          "touch /usr/share/collectd/types.db"
+        ]
+      }
+    },
+    {
+      "action": "aws:runDocument",
+      "name": "startCloudWatchAgent",
+      "inputs": {
+        "documentType": "SSMDocument",
+        "documentPath": "AmazonCloudWatch-ManageAgent",
+        "documentParameters": "{\"optionalConfigurationLocation\":\"{{ configurationLocation }}\"}"
+      }
+    }
+  ]
+}
