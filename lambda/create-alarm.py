@@ -2,6 +2,7 @@ import json
 import boto3
 import time
 import os
+import botocore
 
 threshold = int(os.getenv('THRESHOLD_UTILISATION'))
 ebs_utilisation_topic_arn = os.getenv('SNS_TOPIC_ARN')
