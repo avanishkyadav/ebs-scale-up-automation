@@ -10,7 +10,10 @@ Scheduled vertical scaling changes the RDS instance type, provisioned iops, stor
 Scheduled horizontal scaling adds or removes the read replicas associated with RDS instances.
 
 ## Architecture
-![Architecture Diagram](architecture/create-metric-alarm.png)
+**Initiate scale up**
+![Architecture Diagram](architecture/initiate-scale-up.png)
+
+**Scale up volume**
 ![Architecture Diagram](architecture/scaling-ebs-volume.png)
 
 ### How It Works
