@@ -10,7 +10,8 @@ Scheduled vertical scaling changes the RDS instance type, provisioned iops, stor
 Scheduled horizontal scaling adds or removes the read replicas associated with RDS instances.
 
 ## Architecture
-![Architecture Diagram](architecture/rds-scheduled-scaling.png)
+![Architecture Diagram](architecture/create-metric-alarm.png)
+![Architecture Diagram](architecture/scaling-ebs-volume.png)
 
 ### How It Works
 Each of these stacks creates two separate Amazon EventBridge rules. One triggers lambda to scale-up the resources and other triggers lambda to scale it down.
