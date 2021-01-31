@@ -1,5 +1,5 @@
 
-# Scheduled Scaling of RDS
+# Automation to scale EBS volume
 
 Currently, AWS doesn't provide any autoscaling capability for RDS instances except for RDS Aurora. But Scheduled scaling can be implemented for RDS using Amazon EventBridge and AWS Lambda. This solutions have two stacks one for vertical scaling and other for horizontal scaling and these can be deployed independently. 
 
@@ -109,8 +109,8 @@ Prameters required for stack creation.
 | KeyName | S3 Key name of the file `ebs-scale-up.zip`.  (Remark - Applicable only if installing with CloudFormation Template. Default - `ebs-scale-up.zip`) |
 | EnableNotification | Publish scaling summary to NotificationTopicArn. |
 | NotificationTopicArn | SNS topic arn to which notification will be published. |
-| TargetUtilisationPercent | Target utilisation which must be achieved after scale out happen. [1-100]. |
-| ThresholdUtilisationPercent | Time at which scale-out of read replicas will take place. |
+| TargetUtilisationPercent | Target utilisation which must be achieved after scale out happen. `[1-100]`` |
+| ThresholdUtilisationPercent | Time at which scale-out of read replicas will take place. `[1-100]`` |
 
 **Note -** 
 - Every type of RDS instances have different constraints on number of replicas that can be created, rds instnace class allowd. So make sure a rds can be scaled to a particular instance class and replica count before creating rds scaling tags.
