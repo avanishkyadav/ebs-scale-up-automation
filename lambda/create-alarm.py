@@ -12,14 +12,16 @@ ec2 = boto3.client('ec2')
 cw = boto3.client('cloudwatch')
 
 def lambda_handler(event, context):
-    if event['InstanceId']=='*':
+    if event['InstanceIds']=='*':
         reservations = ec2.describe_instances()['Reservations']
         for reservation in reservations:
             for instance in reservation['Instances']:
                 initiate_create_alarm(instance)
     else:
-        instance = ec2.describe_instances(InstanceIds=[event['InstanceId']])['Reservations'][0]['Instances'][0]
-        initiate_create_alarm(instance)
+        reservations = ec2.describe_instances(InstanceIds=event['InstanceIds'])['Reservations']
+        for reservation in reservations:
+            for instance in reservation['Instances']:
+                initiate_create_alarm(instance)
         
 def initiate_create_alarm(instance):
     print('===================================================================================================')
