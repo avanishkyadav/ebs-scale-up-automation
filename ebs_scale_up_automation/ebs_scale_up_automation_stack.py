@@ -76,7 +76,7 @@ class EbsScaleUpAutomationStack(core.Stack):
         
         ebs_util_exceeded_topic = sns.Topic(
             self, 'EBSUtilisationExceededTopic',
-            topic_name='EBSUtilisationExceededTopic'
+            topic_name='ebs-utilisation-exceeded-topic'
         )
         
         create_metric_alarm_policy = iam.PolicyDocument(
@@ -132,7 +132,7 @@ class EbsScaleUpAutomationStack(core.Stack):
             ),
             environment={
                 'THRESHOLD_UTILISATION': theshold_util.value_as_string,
-                'SNS_TOPIC_ARN':ebs_util_exceeded_topic.topic_arn
+                'UTIL_EXCEEDED_SNS_TOPIC_ARN':ebs_util_exceeded_topic.topic_arn
             }
         )
         
@@ -185,7 +185,7 @@ class EbsScaleUpAutomationStack(core.Stack):
                 'THRESHOLD_UTILISATION': theshold_util.value_as_string,
                 'DESIRED_UTILISATION': target_util.value_as_string,
                 'ENABLE_SNS':enable_sns.value_as_string,
-                'SNS_TOPIC_ARN':sns_arn.value_as_string
+                'SNS_NOTIFICATION_TOPIC_ARN':sns_arn.value_as_string
             }
         )
         

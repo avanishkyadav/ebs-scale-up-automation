@@ -12,9 +12,21 @@ Scheduled horizontal scaling adds or removes the read replicas associated with R
 ## Architecture
 **Initiate scale up**
 ![Architecture Diagram](architecture/initiate-scale-up.png)
+### How it works
+1. User invokes Lambda `create-metric-alarm-function`.
+2. Lambda makes a call to System Manager (Parameter Store) to read CloudWatch agent config file `/CWAgent/[Linux|Windows]/Disk`.
+3. Lambda sends command to System Manager (Run Command) to extract disk metadata like Device Name,  Mount Point etc.
+4. Lambda updates the CloudWatch agent config file with disk metadata.
+5. Lambda sends command to System Manager to install and configure CloudWatch agent using document `CloudWatchAgent` and parameter `/CWAgent/[Linux|Windows]/Disk`. This step will create disk utilisation metric in CloudWatch for each mount point. It might take 3-5 minutes before metric appear in CloudWatch under namespace `CWAgent`.
+6. Creates a CloudWatch alarm on the utilisation metric created in previous step. Name of the alarm will start with `ebs-utilisation-exceeded-alarm:[instance_id]:[device_name]`.
 
 **Scale up volume**
 ![Architecture Diagram](architecture/scaling-ebs-volume.png)
+1. When disk utilisation crosses threshold it invokes Lambda `scale-ebs-function` using SNS Topic `ebs-utilisation-exceeded-topic`.
+2. Lambda sends command to System Manager (Run Command) to extract EBS volume id associated with the disk using commands like `lsblk`, `Get-Partition` etc.
+3. Lambda extract current size of EBS volume.
+4. Lambda modifies the volume size of the EBS volume.
+5. To expand disk at OS level, Lambda sends command to System Manager Run Command.
 
 ### How It Works
 Each of these stacks creates two separate Amazon EventBridge rules. One triggers lambda to scale-up the resources and other triggers lambda to scale it down.

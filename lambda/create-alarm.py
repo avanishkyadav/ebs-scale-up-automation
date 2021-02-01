@@ -5,7 +5,7 @@ import os
 import botocore
 
 threshold = int(os.getenv('THRESHOLD_UTILISATION'))
-ebs_utilisation_topic_arn = os.getenv('SNS_TOPIC_ARN')
+ebs_utilisation_topic_arn = os.getenv('UTIL_EXCEEDED_SNS_TOPIC_ARN')
 
 ssm = boto3.client('ssm')
 ec2 = boto3.client('ec2')
@@ -75,7 +75,7 @@ def initiate_create_alarm(instance):
             
     print('Installing and configuring CloudWatch agent on "' + instance_id +'".')
     parameters = {'configurationLocation': ['/CWAgent/' + platform.capitalize() + '/Disk']}
-    result = send_ssm_command(instance_id,'CloudWatchAgent',parameters)
+    result = send_ssm_command(instance_id,'CloudWatchAgent-Installation',parameters)
     if result['Status']=='Success':
         print('CloudWatch agent successfully installed.')
     else:
@@ -143,7 +143,7 @@ def send_ssm_command(instance_id, document, parameters):
         return {'Status':'Failed', 'StandardOutputContent':''}
         
 def create_alarm(instance_id,metric_name,dimensions,volume,threshold,comparison):
-    print('Creating "'+"EBSUtilisationExceededAlarm-"+instance_id+"-"+volume+'" CloudWatch alarm.')
+    print('Creating "'+'ebs-utilisation-exceeded-alarm:'+instance_id+':'+volume+'" CloudWatch alarm.')
     cw.put_metric_alarm(
         AlarmActions=[
             ebs_utilisation_topic_arn,
@@ -152,7 +152,7 @@ def create_alarm(instance_id,metric_name,dimensions,volume,threshold,comparison)
         EvaluationPeriods=1,
         DatapointsToAlarm=1,
         Threshold=threshold,
-        AlarmName="EBSUtilisationExceededAlarm-"+instance_id+"-"+volume,
+        AlarmName='ebs-utilisation-exceeded-alarm:'+instance_id+':'+volume,
         MetricName=metric_name,
         Namespace='CWAgent',
         Statistic='Average',

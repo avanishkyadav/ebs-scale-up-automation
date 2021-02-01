@@ -6,7 +6,7 @@ import math
 import botocore
 
 sns_enabled = os.getenv('ENABLE_SNS').lower()
-sns_arn = os.getenv('SNS_TOPIC_ARN')
+sns_arn = os.getenv('SNS_NOTIFICATION_TOPIC_ARN')
 req_utilisation = os.getenv('DESIRED_UTILISATION')
 threshold = os.getenv('THRESHOLD_UTILISATION')
 
@@ -89,7 +89,7 @@ def send_ssm_command(instance_id, document, parameters):
 
 def lambda_handler(event, context):
     alarm_name = json.loads(event['Records'][0]['Sns']['Message'])['AlarmName']
-    instance_id = 'i-' + alarm_name.split('-')[2]
+    instance_id = alarm_name.split(':')[1]
     print('"'+ alarm_name +'" CloudWatch alarm triggered.')
     sns_notification_msg = '"'+ alarm_name +'" CloudWatch alarm triggered.'
     print('Starting EBS scaling for "'+ instance_id +'".')
